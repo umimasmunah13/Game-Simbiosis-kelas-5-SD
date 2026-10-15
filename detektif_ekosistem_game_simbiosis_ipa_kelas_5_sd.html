@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detektif Ekosistem: Misi Detektor & Ular Tangga Simbiosis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFD166',
+                        brandGreen: '#06D6A0',
+                        brandBlue: '#118AB2',
+                        brandRed: '#EF476F',
+                        brandDark: '#073B4C',
+                        brandPurple: '#8338EC'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F4F9F9;
+            user-select: none;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+        .btn-bounce {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        .btn-bounce:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        .card-shadow {
+            box-shadow: 0 12px 24px -6px rgba(7, 59, 76, 0.12);
+        }
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            position: relative;
+        }
+        .dice-roll-anim {
+            animation: spin 0.4s ease-in-out infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        /* Pawn jumping animation */
+        .pawn-jump {
+            animation: jump 0.25s ease-out;
+        }
+        @keyframes jump {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.3); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        /* Glassmorphism utility */
+        .glass {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate, #printable-certificate * {
+                visibility: visible;
+            }
+            #printable-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-brandDark flex flex-col justify-between overflow-x-hidden">
+
+    <!-- TOP HEADER / NAV BAR -->
+    <header class="bg-white border-b-4 border-brandYellow px-4 py-3 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-brandYellow text-brandDark p-2 rounded-2xl shadow-inner font-bold text-xl flex items-center justify-center w-10 h-10">
+                    🔍
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-brandDark leading-none">Detektif Ekosistem</h1>
+                    <span class="text-xs text-gray-500 font-semibold">IPA Kelas 5 SD - Misi Simbiosis</span>
+                </div>
+            </div>
+
+            <!-- Player Status Badge -->
+            <div id="player-badge" class="hidden flex items-center gap-3 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-full">
+                <span id="header-avatar" class="text-2xl">🕵️‍♂️</span>
+                <div>
+                    <p id="header-name" class="font-bold text-sm text-indigo-900 leading-tight">Nama Siswa</p>
+                    <div class="flex items-center gap-1 text-xs text-amber-500 font-bold">
+                        <i class="fa-solid font-bold fa-star"></i>
+                        <span id="header-score">0 Poin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER FOR SCREENS -->
+    <main class="max-w-4xl mx-auto w-full p-4 flex-grow flex items-center justify-center">
+
+        <!-- SCREEN 1: WELCOME & CHARACTER SELECTION -->
+        <section id="screen-welcome" class="w-full bg-white rounded-3xl p-6 md:p-10 card-shadow border-4 border-emerald-300 text-center relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none">🌿</div>
+            <div class="inline-block bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-bold mb-4">
+                🎮 Media Pembelajaran Interaktif IPA
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-brandDark mb-3">Selamat Datang, Detektif Alam!</h2>
+            <p class="text-gray-600 max-w-xl mx-auto mb-6 text-sm md:text-base">
+                Ekosistem sedang membutuhkan bantuanmu! Pecahkan kasus hubungan antar makhluk hidup, mainkan Ular Tangga Ekosistem, dan raih Sertifikat Detektif!
+            </p>
+
+            <!-- Name Input -->
+            <div class="max-w-md mx-auto mb-6">
+                <label for="input-player-name" class="block text-left text-sm font-bold text-gray-700 mb-2">Nama Lengkap Detektif:</label>
+                <input type="text" id="input-player-name" placeholder="Ketik namamu di sini..." class="w-full px-4 py-3 rounded-2xl border-2 border-emerald-300 focus:border-brandBlue focus:outline-none text-lg font-semibold text-center text-brandDark bg-emerald-50/30">
+            </div>
+
+            <!-- Avatar Choice -->
+            <div class="mb-8">
+                <p class="text-sm font-bold text-gray-700 mb-3">Pilih Karakter Detektifmu:</p>
+                <div class="flex justify-center gap-6">
+                    <button type="button" onclick="selectAvatar('rio')" id="avatar-rio" class="avatar-option p-4 rounded-2xl border-4 border-transparent hover:border-brandBlue bg-blue-50 transition-all flex flex-col items-center w-36 cursor-pointer">
+                        <span class="text-6xl mb-2">🕵️‍♂️</span>
+                        <span class="font-bold text-brandDark">Detektif Rio</span>
+                    </button>
+                    <button type="button" onclick="selectAvatar('maya')" id="avatar-maya" class="avatar-option p-4 rounded-2xl border-4 border-transparent hover:border-brandRed bg-rose-50 transition-all flex flex-col items-center w-36 cursor-pointer">
+                        <span class="text-6xl mb-2">🕵️‍♀️</span>
+                        <span class="font-bold text-brandDark">Detektif Maya</span>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="btn-bounce bg-brandGreen hover:bg-emerald-500 text-white font-bold text-xl px-8 py-4 rounded-2xl shadow-lg border-b-4 border-emerald-700 w-full md:w-auto">
+                🚀 Mulai Petualangan Misi!
+            </button>
+        </section>
+
+        <!-- SCREEN 2: MAP / ZONA SELECTOR -->
+        <section id="screen-map" class="hidden w-full space-y-6">
+            <div class="bg-gradient-to-r from-brandBlue to-indigo-600 rounded-3xl p-6 text-white text-center shadow-lg relative">
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Peta Petualangan Ekosistem 🗺️</h2>
+                <p class="text-blue-100 text-sm">Pilih zona ekosistem atau tantangan game di bawah ini!</p>
+            </div>
+
+            <!-- Special Snakes & Ladders Banner Mode -->
+            <div class="bg-gradient-to-r from-amber-400 via-orange-400 to-red-400 p-1 rounded-3xl shadow-md">
+                <div class="bg-white p-5 rounded-[22px] flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 text-center md:text-left">
+                        <div class="text-5xl bg-amber-100 p-3 rounded-2xl">🎲</div>
+                        <div>
+                            <span class="bg-red-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">MODE BARU!</span>
+                            <h3 class="font-bold text-gray-800 text-xl">Ular Tangga Simbiosis</h3>
+                            <p class="text-xs text-gray-500">Lempar dadu, panjat tangga Mutualisme, dan hindari perangkap Parasitisme!</p>
+                        </div>
+                    </div>
+                    <button onclick="enterSnakesLadders()" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 border-amber-700 whitespace-nowrap">
+                        🎲 Main Ular Tangga!
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Zona 1: Laut -->
+                <div id="card-zone-ocean" class="bg-white rounded-3xl p-5 card-shadow border-4 border-cyan-200 hover:border-cyan-400 transition-all text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-6xl mb-3">🌊</div>
+                        <h3 class="text-xl font-bold text-cyan-800 mb-1">Zona Laut</h3>
+                        <p class="text-xs text-gray-500 mb-4">Kasus: Hiu, Remora, Anemon & Ikan Badut</p>
+                    </div>
+                    <div>
+                        <div id="status-zone-ocean" class="mb-3">
+                            <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">Belum Selesai</span>
+                        </div>
+                        <button onclick="enterZone('ocean')" class="btn-bounce w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 rounded-xl border-b-4 border-cyan-700">
+                            Jelajahi Zona 🔍
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zona 2: Hutan -->
+                <div id="card-zone-jungle" class="bg-white rounded-3xl p-5 card-shadow border-4 border-emerald-200 hover:border-emerald-400 transition-all text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-6xl mb-3">🌳</div>
+                        <h3 class="text-xl font-bold text-emerald-800 mb-1">Zona Hutan</h3>
+                        <p class="text-xs text-gray-500 mb-4">Kasus: Bunga Rafflesia, Lalat, Benalu & Pohon</p>
+                    </div>
+                    <div>
+                        <div id="status-zone-jungle" class="mb-3">
+                            <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">Belum Selesai</span>
+                        </div>
+                        <button onclick="enterZone('jungle')" class="btn-bounce w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl border-b-4 border-emerald-700">
+                            Jelajahi Zona 🔍
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zona 3: Peternakan -->
+                <div id="card-zone-farm" class="bg-white rounded-3xl p-5 card-shadow border-4 border-amber-200 hover:border-amber-400 transition-all text-center flex flex-col justify-between">
+                    <div>
+                        <div class="text-6xl mb-3">🌾</div>
+                        <h3 class="text-xl font-bold text-amber-800 mb-1">Zona Peternakan</h3>
+                        <p class="text-xs text-gray-500 mb-4">Kasus: Kerbau, Jalak, Cacing Pita & Sapi</p>
+                    </div>
+                    <div>
+                        <div id="status-zone-farm" class="mb-3">
+                            <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">Belum Selesai</span>
+                        </div>
+                        <button onclick="enterZone('farm')" class="btn-bounce w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl border-b-4 border-amber-700">
+                            Jelajahi Zona 🔍
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bonus Stage Trigger -->
+            <div class="bg-purple-50 border-2 border-purple-200 rounded-3xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="text-4xl bg-purple-200 p-3 rounded-2xl">🧪</div>
+                    <div>
+                        <h4 class="font-bold text-purple-900 text-lg">Misi Lanjutan: Lab Racik & Super City</h4>
+                        <p class="text-xs text-purple-700">Selesaikan minimal 2 Zona untuk membuka Ujian Akhir Detektif!</p>
+                    </div>
+                </div>
+                <button id="btn-bonus-stage" onclick="startBonusStages()" disabled class="px-6 py-3 rounded-2xl font-bold text-white bg-gray-400 cursor-not-allowed transition-all">
+                    🔒 Terkunci
+                </button>
+            </div>
+        </section>
+
+        <!-- NEW SCREEN: ULAR TANGGA SIMBIOSIS BOARD -->
+        <section id="screen-snakes-ladders" class="hidden w-full bg-white rounded-3xl p-4 md:p-6 card-shadow border-4 border-amber-400">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Mode Duel Interaktif</span>
+                    <h2 class="text-2xl font-bold text-brandDark mt-1">🎲 Ular Tangga Ekosistem Comel</h2>
+                </div>
+                <button onclick="backToMap()" class="text-gray-400 hover:text-gray-600 text-sm font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali Ke Peta
+                </button>
+            </div>
+
+            <!-- MODE SELECTOR MODAL / OVERLAY IF NOT STARTED -->
+            <div id="sl-mode-select" class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-5 mb-4 text-center">
+                <h3 class="font-bold text-lg text-brandDark mb-2">🎮 Pilih Mode Permainan:</h3>
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <button onclick="startSnakesGame('bot')" class="btn-bounce bg-indigo-500 hover:bg-indigo-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow">
+                        🤖 Lawan Detektif Bot (AI)
+                    </button>
+                    <button onclick="startSnakesGame('friend')" class="btn-bounce bg-pink-500 hover:bg-pink-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow">
+                        👥 Main Berdua Teman (Pass & Play)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                <!-- Board Display (Left/Center 2 Cols) -->
+                <div class="md:col-span-2 bg-emerald-50 p-3 rounded-2xl border-2 border-emerald-200 relative overflow-hidden">
+                    
+                    <!-- Cute SVG Overlay for Snakes and Ladders Art -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 600 500" preserveAspectRatio="none">
+                        <defs>
+                            <!-- Cute Gradient for Ladders -->
+                            <linearGradient id="ladderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFD166" />
+                                <stop offset="100%" stop-color="#F78C6B" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- TANGGA COMEL 1 (Kotak 3 ke 11) -->
+                        <g opacity="0.85">
+                            <line x1="250" y1="450" x2="450" y2="350" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="260" y1="435" x2="460" y2="335" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="280" y1="420" x2="290" y2="435" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="330" y1="395" x2="340" y2="410" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="380" y1="370" x2="390" y2="385" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="430" y1="345" x2="440" y2="360" stroke="#8D6E63" stroke-width="4"/>
+                        </g>
+
+                        <!-- TANGGA COMEL 2 (Kotak 12 ke 20) -->
+                        <g opacity="0.85">
+                            <line x1="550" y1="350" x2="150" y2="250" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="550" y1="335" x2="150" y2="235" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="470" y1="320" x2="470" y2="335" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="370" y1="295" x2="370" y2="310" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="270" y1="270" x2="270" y2="285" stroke="#8D6E63" stroke-width="4"/>
+                        </g>
+
+                        <!-- TANGGA COMEL 3 (Kotak 25 ke 29) -->
+                        <g opacity="0.85">
+                            <line x1="450" y1="150" x2="150" y2="50" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="450" y1="135" x2="150" y2="35" stroke="url(#ladderGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <line x1="380" y1="110" x2="380" y2="125" stroke="#8D6E63" stroke-width="4"/>
+                            <line x1="280" y1="80" x2="280" y2="95" stroke="#8D6E63" stroke-width="4"/>
+                        </g>
+
+                        <!-- ULAR COMEL 1 (Kotak 7 ke 2) -->
+                        <path d="M 50 450 Q 20 400 100 350" fill="none" stroke="#FF5964" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+                        <!-- Head of Cute Snake 1 -->
+                        <circle cx="100" cy="350" r="12" fill="#FF5964" />
+                        <circle cx="96" cy="346" r="3" fill="#FFF" />
+                        <circle cx="104" cy="346" r="3" fill="#FFF" />
+
+                        <!-- ULAR COMEL 2 (Kotak 19 ke 8) -->
+                        <path d="M 550 250 Q 300 300 250 450" fill="none" stroke="#35A7FF" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+                        <circle cx="550" cy="250" r="12" fill="#35A7FF" />
+                        <circle cx="546" cy="246" r="3" fill="#FFF" />
+                        <circle cx="554" cy="246" r="3" fill="#FFF" />
+
+                        <!-- ULAR COMEL 3 (Kotak 26 ke 14) -->
+                        <path d="M 150 50 Q 50 150 250 250" fill="none" stroke="#38B000" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+                        <circle cx="150" cy="50" r="12" fill="#38B000" />
+                        <circle cx="146" cy="46" r="3" fill="#FFF" />
+                        <circle cx="154" cy="46" r="3" fill="#FFF" />
+                    </svg>
+
+                    <div id="snakes-board" class="board-grid relative z-20">
+                        <!-- 30 Tiles generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Game Controls & Turn Status -->
+                <div class="bg-amber-50/70 p-4 rounded-2xl border-2 border-amber-200 flex flex-col items-center justify-between gap-3 h-full">
+                    
+                    <!-- Turn Status Indicator -->
+                    <div class="w-full text-center bg-white p-3 rounded-2xl border border-amber-200 shadow-sm">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">GILIRAN MAIN</span>
+                        <div id="sl-turn-indicator" class="flex items-center justify-center gap-2 font-bold text-base text-brandDark">
+                            <span id="sl-turn-avatar" class="text-2xl">🕵️‍♂️</span>
+                            <span id="sl-turn-name">Detektif Rio</span>
+                        </div>
+                    </div>
+
+                    <!-- Scores/Positions Comparison -->
+                    <div class="grid grid-cols-2 gap-2 w-full text-center text-xs font-bold">
+                        <div id="sl-card-p1" class="bg-white p-2 rounded-xl border-2 border-amber-400 shadow-sm">
+                            <span id="sl-p1-label" class="text-amber-800 block text-[10px]">P1: Rio</span>
+                            <span id="sl-p1-pos" class="text-sm font-bold text-brandDark">Kotak 1</span>
+                        </div>
+                        <div id="sl-card-p2" class="bg-white p-2 rounded-xl border-2 border-gray-200 shadow-sm">
+                            <span id="sl-p2-label" class="text-gray-500 block text-[10px]">P2: Bot</span>
+                            <span id="sl-p2-pos" class="text-sm font-bold text-brandDark">Kotak 1</span>
+                        </div>
+                    </div>
+
+                    <!-- Animated Dice Widget -->
+                    <div class="text-center py-1">
+                        <div id="dice-display" class="text-6xl bg-white w-20 h-20 rounded-2xl shadow-md border-4 border-amber-300 flex items-center justify-center mx-auto mb-1 font-bold text-amber-600">
+                            🎲
+                        </div>
+                        <p id="dice-status" class="text-xs font-bold text-gray-500">Lempar dadu & jawab soal untuk lompat!</p>
+                    </div>
+
+                    <div class="w-full space-y-2">
+                        <button id="btn-roll-dice" onclick="rollDice()" class="btn-bounce w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-2xl shadow-md border-b-4 border-amber-700 text-base">
+                            🎲 Lempar Dadu!
+                        </button>
+                        <button onclick="resetSnakesGame()" class="w-full text-xs text-gray-400 hover:text-gray-600 font-bold py-1">
+                            Ulang Permainan Mode Ini
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: DETEKTOR PERASAAN (CASE INVESTIGATION) -->
+        <section id="screen-detector" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 card-shadow border-4 border-blue-300">
+            <!-- Header Case -->
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <span id="case-zone-tag" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">Zona Laut</span>
+                    <h2 id="case-title" class="text-2xl font-bold text-brandDark mt-1">Kasus 1: Hiu & Ikan Remora</h2>
+                </div>
+                <button onclick="backToMap()" class="text-gray-400 hover:text-gray-600 text-sm font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali Ke Peta
+                </button>
+            </div>
+
+            <!-- Story Info -->
+            <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 mb-6 flex items-start gap-3">
+                <span class="text-2xl">🔎</span>
+                <p id="case-description" class="text-xs md:text-sm text-blue-950">
+                    Ikan Remora selalu berenang menempel di dekat Hiu besar. Remora memakan sisa-sisa makanan Hiu. Apakah Hiu merasa terganggu? Yuk deteksi perasaan mereka!
+                </p>
+            </div>
+
+            <!-- Organism Reaction Gauges -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Makhluk 1 -->
+                <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 text-center">
+                    <div id="org1-icon" class="text-6xl mb-2">🦈</div>
+                    <h3 id="org1-name" class="font-bold text-lg mb-1">Hiu</h3>
+                    <p id="org1-desc" class="text-xs text-gray-500 mb-4">Mendapatkan sisa makanan dari siapa saja, tapi kehadiran Remora tidak membebani Hiu.</p>
+                    
+                    <p class="text-xs font-bold text-gray-700 mb-2">Pilih Dampak / Perasaan Hiu:</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setReaction(1, '+')" id="btn-org1-plus" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-emerald-50 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">🟢</span>
+                            <span class="text-emerald-600">Untung (+)</span>
+                        </button>
+                        <button onclick="setReaction(1, '0')" id="btn-org1-zero" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-gray-100 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">⚪</span>
+                            <span class="text-gray-600">Biasa (0)</span>
+                        </button>
+                        <button onclick="setReaction(1, '-')" id="btn-org1-minus" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-rose-50 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">🔴</span>
+                            <span class="text-rose-600">Rugi (-)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Makhluk 2 -->
+                <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 text-center">
+                    <div id="org2-icon" class="text-6xl mb-2">🐟</div>
+                    <h3 id="org2-name" class="font-bold text-lg mb-1">Ikan Remora</h3>
+                    <p id="org2-desc" class="text-xs text-gray-500 mb-4">Mendapatkan sisa makanan gratis dan perlindungan aman dari pemangsa lain.</p>
+                    
+                    <p class="text-xs font-bold text-gray-700 mb-2">Pilih Dampak / Perasaan Remora:</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setReaction(2, '+')" id="btn-org2-plus" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-emerald-50 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">🟢</span>
+                            <span class="text-emerald-600">Untung (+)</span>
+                        </button>
+                        <button onclick="setReaction(2, '0')" id="btn-org2-zero" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-gray-100 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">⚪</span>
+                            <span class="text-gray-600">Biasa (0)</span>
+                        </button>
+                        <button onclick="setReaction(2, '-')" id="btn-org2-minus" class="reaction-btn p-2 rounded-xl border-2 border-gray-200 bg-white hover:bg-rose-50 text-xs font-bold flex flex-col items-center gap-1">
+                            <span class="text-xl">🔴</span>
+                            <span class="text-rose-600">Rugi (-)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusion Selection -->
+            <div class="border-t pt-6 text-center">
+                <p class="text-sm font-bold text-gray-700 mb-3">Berdasarkan Reaksi Di Atas, Hubungan Ini Disebut:</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                    <button onclick="selectSimbiosisType('mutualisme')" id="btn-type-mutualisme" class="type-btn p-3 rounded-xl border-2 border-gray-200 hover:border-brandGreen text-sm font-bold text-brandDark">
+                        🤝 Mutualisme<br><span class="text-xs font-normal text-gray-500">(Saling Menguntungkan)</span>
+                    </button>
+                    <button onclick="selectSimbiosisType('komensalisme')" id="btn-type-komensalisme" class="type-btn p-3 rounded-xl border-2 border-gray-200 hover:border-brandBlue text-sm font-bold text-brandDark">
+                        ⛵ Komensalisme<br><span class="text-xs font-normal text-gray-500">(Satu Untung, Satu Netral)</span>
+                    </button>
+                    <button onclick="selectSimbiosisType('parasitisme')" id="btn-type-parasitisme" class="type-btn p-3 rounded-xl border-2 border-gray-200 hover:border-brandRed text-sm font-bold text-brandDark">
+                        🦟 Parasitisme<br><span class="text-xs font-normal text-gray-500">(Satu Untung, Satu Rugi)</span>
+                    </button>
+                </div>
+
+                <button onclick="verifyCaseAnswer()" class="btn-bounce bg-brandYellow hover:bg-amber-400 text-brandDark font-bold text-lg px-8 py-3 rounded-2xl shadow-md border-b-4 border-amber-600 w-full md:w-auto">
+                    ⚡ Periksa Analisis Detektif!
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: LAB RACIK SIMBIOSIS -->
+        <section id="screen-lab" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 card-shadow border-4 border-purple-300">
+            <div class="text-center mb-6">
+                <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Mode Game 2</span>
+                <h2 class="text-3xl font-bold text-brandDark mt-1">🧪 Lab Racik Simbiosis</h2>
+                <p class="text-xs md:text-sm text-gray-600">Klik pasangan organisme lalu masukkan ke dalam tab/kategori yang tepat!</p>
+            </div>
+
+            <!-- Item Pool -->
+            <div class="bg-purple-50/50 p-4 rounded-2xl border border-purple-100 mb-6">
+                <p class="text-xs font-bold text-purple-900 mb-3 text-center">PILIH SALAH SATU PASANGAN BERIKUT:</p>
+                <div id="lab-items-container" class="flex flex-wrap justify-center gap-3">
+                    <!-- Items rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- 3 Target Buckets -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Bucket Mutualisme -->
+                <div onclick="dropToLabCategory('mutualisme')" class="cursor-pointer bg-emerald-50 border-2 border-dashed border-emerald-300 hover:border-emerald-500 p-4 rounded-2xl text-center min-h-[160px] flex flex-col justify-between">
+                    <div>
+                        <span class="text-3xl">🤝</span>
+                        <h3 class="font-bold text-emerald-800 text-sm mt-1">MUTUALISME</h3>
+                        <p class="text-[10px] text-emerald-600 mb-2">(Untung + Untung)</p>
+                    </div>
+                    <div id="bucket-mutualisme" class="space-y-1 text-left"></div>
+                </div>
+
+                <!-- Bucket Komensalisme -->
+                <div onclick="dropToLabCategory('komensalisme')" class="cursor-pointer bg-blue-50 border-2 border-dashed border-blue-300 hover:border-blue-500 p-4 rounded-2xl text-center min-h-[160px] flex flex-col justify-between">
+                    <div>
+                        <span class="text-3xl">⛵</span>
+                        <h3 class="font-bold text-blue-800 text-sm mt-1">KOMENSALISME</h3>
+                        <p class="text-[10px] text-blue-600 mb-2">(Untung + Netral)</p>
+                    </div>
+                    <div id="bucket-komensalisme" class="space-y-1 text-left"></div>
+                </div>
+
+                <!-- Bucket Parasitisme -->
+                <div onclick="dropToLabCategory('parasitisme')" class="cursor-pointer bg-rose-50 border-2 border-dashed border-rose-300 hover:border-rose-500 p-4 rounded-2xl text-center min-h-[160px] flex flex-col justify-between">
+                    <div>
+                        <span class="text-3xl">🦟</span>
+                        <h3 class="font-bold text-rose-800 text-sm mt-1">PARASITISME</h3>
+                        <p class="text-[10px] text-rose-600 mb-2">(Untung + Rugi)</p>
+                    </div>
+                    <div id="bucket-parasitisme" class="space-y-1 text-left"></div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="finishLabStage()" class="btn-bounce bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg px-8 py-3 rounded-2xl shadow-md border-b-4 border-purple-900">
+                    Lanjut Ke Ujian Super City 🏙️
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 5: SUPER CITY / EMERGENCY EVENT TEST -->
+        <section id="screen-city" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 card-shadow border-4 border-amber-300">
+            <div class="text-center mb-6">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Mode Game 3: Bonus Test</span>
+                <h2 class="text-3xl font-bold text-brandDark mt-1">🏙️ Kejadian Darurat Super City</h2>
+                <p class="text-xs md:text-sm text-gray-600">Uji kemampuan berpikir sebab-akibat ekosistem kamu!</p>
+            </div>
+
+            <!-- Quiz Container -->
+            <div id="city-quiz-container" class="space-y-6">
+                <!-- Question Card rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- SCREEN 6: CERTIFICATE & FINAL SCORE -->
+        <section id="screen-certificate" class="hidden w-full flex flex-col items-center">
+            
+            <!-- Printable Area -->
+            <div id="printable-certificate" class="w-full bg-white rounded-3xl p-8 card-shadow border-8 border-amber-300 text-center relative overflow-hidden my-4">
+                <div class="border-4 border-amber-200 p-6 rounded-2xl relative">
+                    <!-- Ribbon Header -->
+                    <div class="text-5xl mb-2">🏆</div>
+                    <span class="text-xs font-bold tracking-widest text-amber-700 uppercase">Sertifikat Kelulusan Resmi</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-brandDark my-2">DETEKTIF EKOSISTEM UTAMA</h2>
+                    <p class="text-xs text-gray-500 mb-6">Diberikan sebagai penghargaan atas keberhasilan menyelesaikan seluruh Misi Simbiosis IPA Kelas 5 SD</p>
+
+                    <p class="text-sm text-gray-600">Sertifikat ini secara bangga dianugerahkan kepada:</p>
+                    <h3 id="cert-name" class="text-3xl font-bold text-brandBlue my-2 underline decoration-brandYellow underline-offset-8">
+                        Nama Siswa
+                    </h3>
+
+                    <div class="my-6 py-4 bg-amber-50 rounded-2xl max-w-md mx-auto border border-amber-200 flex justify-around items-center">
+                        <div>
+                            <span class="text-xs text-gray-500 block">Total Skor Misi</span>
+                            <span id="cert-score" class="text-2xl font-bold text-amber-600">100 Poin</span>
+                        </div>
+                        <div class="h-8 w-px bg-amber-200"></div>
+                        <div>
+                            <span class="text-xs text-gray-500 block">Predikat Detektif</span>
+                            <span id="cert-rank" class="text-2xl font-bold text-emerald-600">Master Alam</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-gray-500 italic mb-4">
+                        "Telah membuktikan pemahaman mendalam mengenai hubungan Mutualisme, Komensalisme, dan Parasitisme dalam menjaga keseimbangan alam."
+                    </p>
+
+                    <div class="flex justify-between items-center text-xs text-gray-400 pt-4 border-t border-gray-100">
+                        <span>Tanggal: <strong id="cert-date" class="text-gray-600">15 Oktober 2026</strong></span>
+                        <span>Stempel: 🎓 Sekolah IPA Interaktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="no-print flex flex-wrap justify-center gap-4 mt-4">
+                <button onclick="window.print()" class="btn-bounce bg-brandBlue hover:bg-blue-600 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 border-blue-800 flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                </button>
+                <button onclick="resetGame()" class="btn-bounce bg-brandGreen hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 border-emerald-800 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Main Lagi
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t py-3 text-center text-xs text-gray-400">
+        Media Pembelajaran IPA Kelas 5 SD • Topik: Simbiosis & Ekosistem
+    </footer>
+
+    <!-- MODAL POPUP FOR CASE & SNAKES FEEDBACK / QUESTIONS -->
+    <div id="modal-feedback" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center card-shadow relative animate-bounce-once">
+            <div id="modal-icon" class="text-6xl mb-3">🎉</div>
+            <h3 id="modal-title" class="text-2xl font-bold text-brandDark mb-2">Jawaban Tepat!</h3>
+            <div id="modal-explanation" class="text-sm text-gray-600 mb-6 bg-slate-50 p-4 rounded-2xl border text-left">
+                Penjelasan singkat edukatif akan tampil di sini...
+            </div>
+            <button onclick="closeModal()" id="modal-btn" class="btn-bounce bg-brandGreen text-white font-bold px-6 py-3 rounded-xl shadow-md w-full">
+                Lanjutkan Misi ➡️
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO SYNTHESIZER (WEB AUDIO API) -->
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'jump') {
+                    // Boing / Jump sound effect
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.12);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'fanfare') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        g.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.12);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + (idx + 1) * 0.12);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio not supported or muted");
+            }
+        }
+    </script>
+
+    <!-- GAME LOGIC SCRIPT -->
+    <script>
+        // State Management
+        let gameState = {
+            playerName: '',
+            avatar: 'rio',
+            score: 0,
+            completedZones: {
+                ocean: false,
+                jungle: false,
+                farm: false
+            },
+            currentZone: null,
+            currentCaseIndex: 0,
+            selectedOrg1Reaction: null,
+            selectedOrg2Reaction: null,
+            selectedSimbiosisType: null,
+            selectedLabItem: null,
+            labState: [],
+            cityAnswers: {},
+            // Snakes & Ladders Duel State
+            slMode: 'bot', // 'bot' or 'friend'
+            slCurrentTurn: 1, // 1 (P1) or 2 (P2 / Bot)
+            p1Pos: 1,
+            p2Pos: 1,
+            p1Name: 'Detektif',
+            p2Name: 'Bot Smart',
+            p1Avatar: '🕵️‍♂️',
+            p2Avatar: '🤖',
+            pendingDiceRoll: 0,
+            isDiceRolling: false,
+            isAnimatingJump: false
+        };
+
+        // Bank Soal Kuis Simbiosis untuk Ular Tangga
+        const slQuizBank = [
+            {
+                q: "Hubungan antara Lebah dan Bunga yang saling menguntungkan disebut?",
+                options: ["Simbiosis Mutualisme", "Simbiosis Parasitisme", "Simbiosis Komensalisme"],
+                correct: 0,
+                exp: "Lebah mendapat nektar dan bunga terbantu penyerbukannya (+/+)."
+            },
+            {
+                q: "Ikan Remora menempel pada Hiu tanpa merugikan Hiu. Ini adalah contoh?",
+                options: ["Mutualisme", "Komensalisme", "Parasitisme"],
+                correct: 1,
+                exp: "Remora untung (+) dan Hiu netral (0) = Komensalisme!"
+            },
+            {
+                q: "Cacing pita menyerap makanan di dalam usus sapi. Sapi merasa?",
+                options: ["Sangat untung", "Dirugikan (-)", "Biasa saja (0)"],
+                correct: 1,
+                exp: "Cacing pita adalah parasit yang merugikan sapi (-)."
+            },
+            {
+                q: "Bunga Rafflesia mengeluarkan bau busuk untuk menarik lalat. Jenis simbiosisnya?",
+                options: ["Mutualisme", "Parasitisme", "Komensalisme"],
+                correct: 0,
+                exp: "Lalat dapat makanan dan Rafflesia terbantu berkembang biak (+/+)."
+            },
+            {
+                q: "Kutu yang hinggap di kepala kucing mengambil darah. Kucing mengalami?",
+                options: ["Keuntungan (+)", "Kerugian (-)", "Tidak berdampak"],
+                correct: 1,
+                exp: "Kutu merugikan kucing (-) karena menyebabkan gatal dan sakit."
+            }
+        ];
+
+        // Special Board Traps / Boosts / Questions
+        const snakesBoardConfig = {
+            3: { type: 'ladder', target: 11, label: '🪜 Nektar Bunga (Mutualisme)', desc: 'Saling menguntungkan! Lebah membantu penyerbukan. Naik ke kotak 11.' },
+            7: { type: 'snake', target: 2, label: '🐍 Serangan Kutu (Parasitisme)', desc: 'Kutu menghisap darah! Turun ke kotak 2.' },
+            12: { type: 'ladder', target: 20, label: '🪜 Rumah Anemon (Mutualisme)', desc: 'Ikan Badut aman! Naik ke kotak 20.' },
+            15: { type: 'question', qIndex: 0 },
+            19: { type: 'snake', target: 8, label: '🐍 Benalu Pohon (Parasitisme)', desc: 'Nutrisi pohon dicuri! Turun ke kotak 8.' },
+            22: { type: 'question', qIndex: 1 },
+            25: { type: 'ladder', target: 29, label: '🪜 Pembersih Jalak (Mutualisme)', desc: 'Burung jalak makan kutu kerbau! Naik ke kotak 29.' },
+            26: { type: 'snake', target: 14, label: '🐍 Nyamuk Malaria (Parasitisme)', desc: 'Gigitan nyamuk mengganggu! Turun ke kotak 14.' }
+        };
+
+        const snakesQuestions = [
+            {
+                q: "Hubungan Ikan Remora yang menempel pada Hiu tanpa merugikan Hiu disebut?",
+                options: ["Simbiosis Mutualisme", "Simbiosis Komensalisme", "Simbiosis Parasitisme"],
+                correct: 1,
+                exp: "Ikan remora untung (+), sedangkan hiu tidak rugi/untung (0). Ini adalah Komensalisme!"
+            },
+            {
+                q: "Apa dampak kehadiran Cacing Pita bagi usus Sapi?",
+                options: ["Sapi bertambah gemuk", "Sapi dirugikan karena nutrisinya dicuri", "Sapi tidak merasakan dampak"],
+                correct: 1,
+                exp: "Cacing pita adalah parasit (-) yang mencuri nutrisi dari sapi (+)."
+            }
+        ];
+
+        // Cases Database
+        const casesData = {
+            ocean: [
+                {
+                    id: 'ocean_1',
+                    title: 'Kasus 1: Hiu & Ikan Remora',
+                    zoneName: 'Zona Laut',
+                    description: 'Ikan Remora sering berenang menempel di tubuh Hiu untuk berlindung dan menyantap sisa makanan Hiu.',
+                    org1: { name: 'Hiu', icon: '🦈', desc: 'Hiu tidak terganggu dan tidak dirugikan oleh kehadiran Ikan Remora.', correct: '0' },
+                    org2: { name: 'Ikan Remora', icon: '🐟', desc: 'Ikan Remora mendapatkan makanan gratis dan perlindungan dari musuh.', correct: '+' },
+                    typeCorrect: 'komensalisme',
+                    explanation: 'Ikan Remora mendapatkan keuntungan (+), sedangkan Hiu tidak diuntungkan maupun dirugikan (0). Hubungan (+ dan 0) adalah **Simbiosis Komensalisme**!'
+                },
+                {
+                    id: 'ocean_2',
+                    title: 'Kasus 2: Anemon Laut & Ikan Badut',
+                    zoneName: 'Zona Laut',
+                    description: 'Ikan Badut tinggal di antara tentakel Anemon Laut yang beracun untuk berlindung, sambil membersihkan kotoran di Anemon.',
+                    org1: { name: 'Anemon Laut', icon: '🪸', desc: 'Anemon menjadi bersih dari parasit dan dapat sisa makanan Ikan Badut.', correct: '+' },
+                    org2: { name: 'Ikan Badut', icon: '🐠', desc: 'Ikan Badut aman dari pemangsa karena tentakel anemon yang beracun.', correct: '+' },
+                    typeCorrect: 'mutualisme',
+                    explanation: 'Kedua makhluk hidup sama-sama mendapatkan keuntungan (+ dan +). Hubungan saling menguntungkan ini disebut **Simbiosis Mutualisme**!'
+                }
+            ],
+            jungle: [
+                {
+                    id: 'jungle_1',
+                    title: 'Kasus 1: Bunga Rafflesia & Lalat',
+                    zoneName: 'Zona Hutan',
+                    description: 'Bunga Rafflesia mengeluarkan bau busuk untuk menarik perhatian lalat agar membantu proses penyerbukan.',
+                    org1: { name: 'Bunga Rafflesia', icon: '🌺', desc: 'Terbantu dalam proses penyerbukan sehingga bisa berkembang biak.', correct: '+' },
+                    org2: { name: 'Lalat', icon: '🪰', desc: 'Mendapatkan makanan berupa cairan nutrisi dari bunga.', correct: '+' },
+                    typeCorrect: 'mutualisme',
+                    explanation: 'Bunga Rafflesia terbantu berkembang biak (+) dan Lalat mendapat makanan (+). Ini adalah **Simbiosis Mutualisme**!'
+                },
+                {
+                    id: 'jungle_2',
+                    title: 'Kasus 2: Benalu & Pohon Inang',
+                    zoneName: 'Zona Hutan',
+                    description: 'Benalu tumbuh menempel di batang pohon dan menyerap air serta zat makanan dari pohon tersebut.',
+                    org1: { name: 'Pohon Inang', icon: '🌳', desc: 'Kehilangan zat makanan dan air sehingga menjadi kurus dan layu.', correct: '-' },
+                    org2: { name: 'Benalu', icon: '🌿', desc: 'Mendapat sari makanan secara gratis tanpa harus mencari sendiri.', correct: '+' },
+                    typeCorrect: 'parasitisme',
+                    explanation: 'Benalu diuntungkan (+) tetapi Pohon Inang sangat dirugikan (-) karena nutrisinya dicuri. Ini dinamakan **Simbiosis Parasitisme**!'
+                }
+            ],
+            farm: [
+                {
+                    id: 'farm_1',
+                    title: 'Kasus 1: Kerbau & Burung Jalak',
+                    zoneName: 'Zona Peternakan',
+                    description: 'Burung Jalak hinggap di punggung Kerbau untuk memakan kutu-kutu yang ada di kulit kerbau.',
+                    org1: { name: 'Kerbau', icon: '🦬', desc: 'Badannya menjadi bersih dan bebas dari rasa gatal akibat kutu.', correct: '+' },
+                    org2: { name: 'Burung Jalak', icon: '🐦', desc: 'Mendapatkan makanan yang lezat berupa kutu kerbau.', correct: '+' },
+                    typeCorrect: 'mutualisme',
+                    explanation: 'Kerbau gatalnya hilang (+) dan Burung Jalak kenyang (+). Keduanya saling menguntungkan sehingga disebut **Simbiosis Mutualisme**!'
+                },
+                {
+                    id: 'farm_2',
+                    title: 'Kasus 2: Cacing Pita & Sapi',
+                    zoneName: 'Zona Peternakan',
+                    description: 'Cacing Pita hidup di dalam usus Sapi dan menyerap nutrisi dari makanan yang dicerna Sapi.',
+                    org1: { name: 'Sapi', icon: '🐄', desc: 'Menjadi lemas, sakit, dan kekurangan gizi.', correct: '-' },
+                    org2: { name: 'Cacing Pita', icon: '🪱', desc: 'Mendapat tempat tinggal dan makanan gratis di dalam tubuh sapi.', correct: '+' },
+                    typeCorrect: 'parasitisme',
+                    explanation: 'Cacing Pita diuntungkan (+) sedangkan Sapi dirugikan (-) karena sakit kekurangan gizi. Ini adalah contoh **Simbiosis Parasitisme**!'
+                }
+            ]
+        };
+
+        // Lab Items Database
+        const labItems = [
+            { id: 'l1', name: 'Lebah & Bunga Sepatu', type: 'mutualisme' },
+            { id: 'l2', name: 'Nyamuk & Manusia', type: 'parasitisme' },
+            { id: 'l3', name: 'Tumbuhan Paku & Pohon', type: 'komensalisme' },
+            { id: 'l4', name: 'Kutu & Kucing', type: 'parasitisme' },
+            { id: 'l5', name: 'Ikan Badut & Anemon', type: 'mutualisme' },
+            { id: 'l6', name: 'Anggrek & Pohon Inang', type: 'komensalisme' }
+        ];
+
+        // Super City Emergency Questions Database
+        const cityQuestions = [
+            {
+                id: 'cq1',
+                scenario: '🚨 Darurat Kota! Populasi Burung Jalak di peternakan mendadak berkurang drastis karena ditangkap pemburu.',
+                question: 'Apakah yang kemungkinan besar terjadi pada populasi Kerbau di peternakan tersebut?',
+                options: [
+                    { text: 'Kerbau menjadi lebih gembira karena tidak dihinggapi burung.', correct: false },
+                    { text: 'Kerbau mengalami gatal-gatal dan gangguan kesehatan karena kutu membludak.', correct: true },
+                    { text: 'Kerbau akan langsung bertelur banyak.', correct: false }
+                ],
+                explanation: 'Simbiosis mutualisme! Burung jalak membantu memakan kutu kerbau. Tanpa burung jalak, populasi kutu membengkak dan merugikan kerbau.'
+            },
+            {
+                id: 'cq2',
+                scenario: '🌾 Hutan Lindung Kota! Banyak warga mencabut Benalu sampai habis dari Pohon-Pohon tua.',
+                question: 'Bagaimana dampak hilangnya Benalu bagi kesehatan Pohon Inang tersebut?',
+                options: [
+                    { text: 'Pohon Inang akan tumbuh lebih subur dan sehat karena nutrisinya tidak dicuri lagi.', correct: true },
+                    { text: 'Pohon Inang akan langsung layu dan mati.', correct: false },
+                    { text: 'Pohon Inang tidak mengalami perubahan apapun.', correct: false }
+                ],
+                explanation: 'Benalu adalah parasit! Jika parasit dihilangkan, pohon inang tidak lagi dirugikan dan dapat menyerap nutrisi secara utuh.'
+            }
+        ];
+
+        function selectAvatar(name) {
+            playSound('click');
+            gameState.avatar = name;
+            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('border-brandBlue', 'border-brandRed', 'bg-blue-100', 'bg-rose-100'));
+            if(name === 'rio') {
+                document.getElementById('avatar-rio').classList.add('border-brandBlue', 'bg-blue-100');
+            } else {
+                document.getElementById('avatar-maya').classList.add('border-brandRed', 'bg-rose-100');
+            }
+        }
+
+        function startGame() {
+            playSound('click');
+            const nameInput = document.getElementById('input-player-name').value.trim();
+            if(!nameInput) {
+                alert('Silakan masukkan nama detektifmu terlebih dahulu!');
+                return;
+            }
+
+            gameState.playerName = nameInput;
+            document.getElementById('header-name').innerText = gameState.playerName;
+            document.getElementById('header-avatar').innerText = gameState.avatar === 'rio' ? '🕵️‍♂️' : '🕵️‍♀️';
+            document.getElementById('player-badge').classList.remove('hidden');
+
+            switchScreen('screen-map');
+        }
+
+        function switchScreen(screenId) {
+            ['screen-welcome', 'screen-map', 'screen-detector', 'screen-lab', 'screen-city', 'screen-certificate', 'screen-snakes-ladders'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function enterSnakesLadders() {
+            playSound('click');
+            document.getElementById('sl-mode-select').classList.remove('hidden');
+            renderSnakesBoard();
+            switchScreen('screen-snakes-ladders');
+        }
+
+        function startSnakesGame(mode) {
+            playSound('click');
+            gameState.slMode = mode;
+            gameState.p1Pos = 1;
+            gameState.p2Pos = 1;
+            gameState.slCurrentTurn = 1;
+
+            gameState.p1Name = gameState.playerName || 'Detektif 1';
+            gameState.p1Avatar = gameState.avatar === 'rio' ? '🕵️‍♂️' : '🕵️‍♀️';
+
+            if (mode === 'bot') {
+                gameState.p2Name = 'Bot Smart 🤖';
+                gameState.p2Avatar = '🤖';
+            } else {
+                gameState.p2Name = 'Teman Detektif 2 👥';
+                gameState.p2Avatar = '🤠';
+            }
+
+            document.getElementById('sl-p1-label').innerText = `P1: ${gameState.p1Name}`;
+            document.getElementById('sl-p2-label').innerText = `P2: ${gameState.p2Name}`;
+            document.getElementById('sl-mode-select').classList.add('hidden');
+
+            updateTurnUI();
+            renderSnakesBoard();
+        }
+
+        function updateTurnUI() {
+            const isP1 = gameState.slCurrentTurn === 1;
+            document.getElementById('sl-turn-avatar').innerText = isP1 ? gameState.p1Avatar : gameState.p2Avatar;
+            document.getElementById('sl-turn-name').innerText = isP1 ? gameState.p1Name : gameState.p2Name;
+
+            document.getElementById('sl-card-p1').className = isP1 ? 'bg-amber-100 p-2 rounded-xl border-2 border-amber-500 shadow-sm' : 'bg-white p-2 rounded-xl border-2 border-gray-200 shadow-sm';
+            document.getElementById('sl-card-p2').className = !isP1 ? 'bg-amber-100 p-2 rounded-xl border-2 border-amber-500 shadow-sm' : 'bg-white p-2 rounded-xl border-2 border-gray-200 shadow-sm';
+
+            document.getElementById('sl-p1-pos').innerText = `Kotak ${gameState.p1Pos}`;
+            document.getElementById('sl-p2-pos').innerText = `Kotak ${gameState.p2Pos}`;
+
+            const rollBtn = document.getElementById('btn-roll-dice');
+            if (!isP1 && gameState.slMode === 'bot') {
+                rollBtn.disabled = true;
+                rollBtn.innerText = '🤖 Bot Sedang Berpikir...';
+                setTimeout(rollDiceForBot, 1200);
+            } else {
+                rollBtn.disabled = false;
+                rollBtn.innerText = '🎲 Lempar Dadu!';
+            }
+        }
+
+        function renderSnakesBoard() {
+            const boardContainer = document.getElementById('snakes-board');
+            boardContainer.innerHTML = '';
+
+            for (let row = 4; row >= 0; row--) {
+                const isEven = row % 2 === 0;
+                for (let col = 0; col < 6; col++) {
+                    const tileNum = isEven ? (row * 6) + (col + 1) : (row * 6) + (6 - col);
+                    
+                    const tile = document.createElement('div');
+                    tile.id = `tile-${tileNum}`;
+                    tile.className = 'bg-white/90 rounded-xl border-2 p-1 min-h-[52px] md:min-h-[62px] flex flex-col justify-between relative shadow-sm text-center transition-all';
+                    
+                    let bgClass = tileNum % 2 === 0 ? 'bg-emerald-100/60 border-emerald-300' : 'bg-amber-100/60 border-amber-300';
+                    if (tileNum === 30) bgClass = 'bg-yellow-300 border-yellow-500 font-bold';
+
+                    tile.className += ' ' + bgClass;
+
+                    let badge = '';
+                    if (snakesBoardConfig[tileNum]) {
+                        const cfg = snakesBoardConfig[tileNum];
+                        if (cfg.type === 'ladder') badge = '🪜';
+                        else if (cfg.type === 'snake') badge = '🐍';
+                    }
+
+                    let p1Symbol = gameState.p1Pos === tileNum ? gameState.p1Avatar : '';
+                    let p2Symbol = gameState.p2Pos === tileNum ? gameState.p2Avatar : '';
+
+                    tile.innerHTML = `
+                        <div class="flex justify-between items-center text-[10px] font-bold text-gray-500">
+                            <span>${tileNum}</span>
+                            <span class="text-xs">${badge}</span>
+                        </div>
+                        <div id="pawn-container-${tileNum}" class="flex justify-center items-center gap-1 h-6 text-xl">
+                            <span>${p1Symbol}</span>
+                            <span>${p2Symbol}</span>
+                        </div>
+                    `;
+                    boardContainer.appendChild(tile);
+                }
+            }
+        }
+
+        function rollDice() {
+            if (gameState.isDiceRolling || gameState.isAnimatingJump) return;
+
+            gameState.isDiceRolling = true;
+            playSound('click');
+
+            const diceBtn = document.getElementById('btn-roll-dice');
+            const diceDisplay = document.getElementById('dice-display');
+            const diceStatus = document.getElementById('dice-status');
+
+            diceBtn.disabled = true;
+            diceDisplay.classList.add('dice-roll-anim');
+            diceStatus.innerText = 'Mengocok dadu...';
+
+            setTimeout(() => {
+                const rolled = Math.floor(Math.random() * 6) + 1;
+                gameState.pendingDiceRoll = rolled;
+
+                diceDisplay.classList.remove('dice-roll-anim');
+                diceDisplay.innerText = rolled;
+                gameState.isDiceRolling = false;
+
+                // Trigger Quiz Challenge BEFORE Moving
+                triggerTurnQuiz(rolled);
+            }, 700);
+        }
+
+        function rollDiceForBot() {
+            if (gameState.slCurrentTurn !== 2 || gameState.slMode !== 'bot') return;
+            rollDice();
+        }
+
+        function triggerTurnQuiz(steps) {
+            const randomQ = slQuizBank[Math.floor(Math.random() * slQuizBank.length)];
+            const curPlayerName = gameState.slCurrentTurn === 1 ? gameState.p1Name : gameState.p2Name;
+
+            if (gameState.slCurrentTurn === 2 && gameState.slMode === 'bot') {
+                // Bot automatically answers (80% chance correct)
+                const isBotCorrect = Math.random() < 0.8;
+                setTimeout(() => {
+                    if (isBotCorrect) {
+                        playSound('correct');
+                        showModal(
+                            '🤖 Bot Menjawab Benar!',
+                            `Bot Smart menjawab kuis dengan tepat!<br>Bot akan maju <strong>${steps} langkah</strong>!`,
+                            'Lihat Lompatan Bot 🚀',
+                            () => { executePawnJump(2, steps); }
+                        );
+                    } else {
+                        playSound('wrong');
+                        showModal(
+                            '❌ Bot Salah Menjawab!',
+                            `Bot Smart keliru menjawab kuis.<br>Bot batal melompat maju!`,
+                            'Lanjut Giliran ➡️',
+                            () => { switchTurn(); }
+                        );
+                    }
+                }, 800);
+                return;
+            }
+
+            // Human player challenge
+            let optsHTML = '';
+            randomQ.options.forEach((opt, idx) => {
+                optsHTML += `<button onclick="submitTurnQuizAnswer(${idx}, ${randomQ.correct}, '${randomQ.exp}', ${steps})" class="w-full text-left p-2.5 my-1 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-xs font-bold text-gray-700 transition-all">${opt}</button>`;
+            });
+
+            document.getElementById('modal-title').innerText = `❓ Tantangan Kuis: ${curPlayerName}`;
+            document.getElementById('modal-explanation').innerHTML = `
+                <p class="text-xs text-amber-800 font-bold mb-1">Dadu menunjukkan angka: 🎲 ${steps}</p>
+                <p class="font-bold text-gray-800 mb-3">${randomQ.q}</p>
+                <div>${optsHTML}</div>
+            `;
+            document.getElementById('modal-btn').classList.add('hidden');
+            document.getElementById('modal-feedback').classList.remove('hidden');
+        }
+
+        function submitTurnQuizAnswer(selectedIdx, correctIdx, exp, steps) {
+            document.getElementById('modal-btn').classList.remove('hidden');
+
+            if (selectedIdx === correctIdx) {
+                playSound('correct');
+                if(gameState.slCurrentTurn === 1) gameState.score += 10;
+                updateScoreUI();
+
+                showModal(
+                    '🎉 Jawaban Tepat!',
+                    `${exp}<br><br>Pion kamu akan melompat maju <strong>${steps} langkah</strong>!`,
+                    'Lompat Sekarang! 🚀',
+                    () => { executePawnJump(gameState.slCurrentTurn, steps); }
+                );
+            } else {
+                playSound('wrong');
+                showModal(
+                    '❌ Jawaban Kurang Tepat!',
+                    `${exp}<br><br>Kamu batal melompat di giliran ini. Tetap semangat!`,
+                    'Ganti Giliran ➡️',
+                    () => { switchTurn(); }
+                );
+            }
+        }
+
+        function executePawnJump(playerNum, steps) {
+            gameState.isAnimatingJump = true;
+            let currentPos = playerNum === 1 ? gameState.p1Pos : gameState.p2Pos;
+            let targetPos = currentPos + steps;
+            if (targetPos > 30) targetPos = 30;
+
+            let stepCount = 0;
+
+            const jumpInterval = setInterval(() => {
+                if (currentPos < targetPos) {
+                    currentPos++;
+                    stepCount++;
+
+                    if (playerNum === 1) gameState.p1Pos = currentPos;
+                    else gameState.p2Pos = currentPos;
+
+                    playSound('jump');
+                    renderSnakesBoard();
+
+                    // Apply jump bounce visual to tile
+                    const pawnContainer = document.getElementById(`pawn-container-${currentPos}`);
+                    if (pawnContainer) pawnContainer.classList.add('pawn-jump');
+
+                } else {
+                    clearInterval(jumpInterval);
+                    gameState.isAnimatingJump = false;
+
+                    // Check for special tile (Snake / Ladder)
+                    checkTileEvent(playerNum, currentPos);
+                }
+            }, 300);
+        }
+
+        function checkTileEvent(playerNum, pos) {
+            if (snakesBoardConfig[pos]) {
+                const cfg = snakesBoardConfig[pos];
+                setTimeout(() => {
+                    if (cfg.type === 'ladder') {
+                        playSound('correct');
+                        showModal(
+                            '🪜 Tangga Mutualisme!',
+                            `${cfg.desc}<br><br>Meluncur naik ke <strong>Kotak ${cfg.target}</strong>!`,
+                            'Naik Ke Atas 🚀',
+                            () => {
+                                if (playerNum === 1) gameState.p1Pos = cfg.target;
+                                else gameState.p2Pos = cfg.target;
+                                renderSnakesBoard();
+                                checkWinnerOrSwitch(playerNum, cfg.target);
+                            }
+                        );
+                    } else if (cfg.type === 'snake') {
+                        playSound('wrong');
+                        showModal(
+                            '🐍 Perangkap Parasitisme!',
+                            `${cfg.desc}<br><br>Terpeleset turun ke <strong>Kotak ${cfg.target}</strong>!`,
+                            'Turun Kebawah 📉',
+                            () => {
+                                if (playerNum === 1) gameState.p1Pos = cfg.target;
+                                else gameState.p2Pos = cfg.target;
+                                renderSnakesBoard();
+                                checkWinnerOrSwitch(playerNum, cfg.target);
+                            }
+                        );
+                    }
+                }, 300);
+            } else {
+                checkWinnerOrSwitch(playerNum, pos);
+            }
+        }
+
+        function checkWinnerOrSwitch(playerNum, finalPos) {
+            if (finalPos === 30) {
+                playSound('fanfare');
+                confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+
+                const winnerName = playerNum === 1 ? gameState.p1Name : gameState.p2Name;
+                showModal(
+                    '🏆 PEMENANG ULAR TANGGA!',
+                    `Selamat kepada <strong>${winnerName}</strong> yang berhasil mencapai Kotak 30 terlebih dahulu!`,
+                    'Selesai & Kembali Ke Peta 🗺️',
+                    () => { switchScreen('screen-map'); }
+                );
+            } else {
+                switchTurn();
+            }
+        }
+
+        function switchTurn() {
+            gameState.slCurrentTurn = gameState.slCurrentTurn === 1 ? 2 : 1;
+            updateTurnUI();
+        }
+
+        function resetSnakesGame() {
+            playSound('click');
+            document.getElementById('sl-mode-select').classList.remove('hidden');
+            gameState.p1Pos = 1;
+            gameState.p2Pos = 1;
+            gameState.slCurrentTurn = 1;
+            document.getElementById('dice-display').innerText = '🎲';
+            document.getElementById('dice-status').innerText = 'Pilih mode permainan terlebih dahulu!';
+            renderSnakesBoard();
+        }
+
+        function enterZone(zoneKey) {
+            playSound('click');
+            gameState.currentZone = zoneKey;
+            gameState.currentCaseIndex = 0;
+            loadCase();
+            switchScreen('screen-detector');
+        }
+
+        function loadCase() {
+            const currentCase = casesData[gameState.currentZone][gameState.currentCaseIndex];
+            
+            document.getElementById('case-zone-tag').innerText = currentCase.zoneName;
+            document.getElementById('case-title').innerText = currentCase.title;
+            document.getElementById('case-description').innerText = currentCase.description;
+
+            // Org 1
+            document.getElementById('org1-icon').innerText = currentCase.org1.icon;
+            document.getElementById('org1-name').innerText = currentCase.org1.name;
+            document.getElementById('org1-desc').innerText = currentCase.org1.desc;
+
+            // Org 2
+            document.getElementById('org2-icon').innerText = currentCase.org2.icon;
+            document.getElementById('org2-name').innerText = currentCase.org2.name;
+            document.getElementById('org2-desc').innerText = currentCase.org2.desc;
+
+            // Reset selections
+            gameState.selectedOrg1Reaction = null;
+            gameState.selectedOrg2Reaction = null;
+            gameState.selectedSimbiosisType = null;
+
+            resetDetectorUI();
+        }
+
+        function resetDetectorUI() {
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.classList.remove('border-brandBlue', 'bg-blue-100', 'scale-105');
+            });
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('border-brandGreen', 'border-brandBlue', 'border-brandRed', 'bg-emerald-50', 'bg-blue-50', 'bg-rose-50');
+            });
+        }
+
+        function setReaction(orgNum, reactionType) {
+            playSound('click');
+            if(orgNum === 1) {
+                gameState.selectedOrg1Reaction = reactionType;
+                document.querySelectorAll('#btn-org1-plus, #btn-org1-zero, #btn-org1-minus').forEach(b => b.classList.remove('border-brandBlue', 'bg-blue-100'));
+                const targetBtn = reactionType === '+' ? 'btn-org1-plus' : reactionType === '0' ? 'btn-org1-zero' : 'btn-org1-minus';
+                document.getElementById(targetBtn).classList.add('border-brandBlue', 'bg-blue-100');
+            } else {
+                gameState.selectedOrg2Reaction = reactionType;
+                document.querySelectorAll('#btn-org2-plus, #btn-org2-zero, #btn-org2-minus').forEach(b => b.classList.remove('border-brandBlue', 'bg-blue-100'));
+                const targetBtn = reactionType === '+' ? 'btn-org2-plus' : reactionType === '0' ? 'btn-org2-zero' : 'btn-org2-minus';
+                document.getElementById(targetBtn).classList.add('border-brandBlue', 'bg-blue-100');
+            }
+        }
+
+        function selectSimbiosisType(type) {
+            playSound('click');
+            gameState.selectedSimbiosisType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('border-brandGreen', 'border-brandBlue', 'border-brandRed', 'bg-emerald-50', 'bg-blue-50', 'bg-rose-50'));
+            
+            if(type === 'mutualisme') {
+                document.getElementById('btn-type-mutualisme').classList.add('border-brandGreen', 'bg-emerald-50');
+            } else if(type === 'komensalisme') {
+                document.getElementById('btn-type-komensalisme').classList.add('border-brandBlue', 'bg-blue-50');
+            } else if(type === 'parasitisme') {
+                document.getElementById('btn-type-parasitisme').classList.add('border-brandRed', 'bg-rose-50');
+            }
+        }
+
+        function verifyCaseAnswer() {
+            if(!gameState.selectedOrg1Reaction || !gameState.selectedOrg2Reaction || !gameState.selectedSimbiosisType) {
+                alert('Detektif, kamu harus memilih reaksi KEDUA makhluk hidup dan menentukan jenis simbiosisnya!');
+                return;
+            }
+
+            const currentCase = casesData[gameState.currentZone][gameState.currentCaseIndex];
+            
+            const isOrg1Correct = gameState.selectedOrg1Reaction === currentCase.org1.correct;
+            const isOrg2Correct = gameState.selectedOrg2Reaction === currentCase.org2.correct;
+            const isTypeCorrect = gameState.selectedSimbiosisType === currentCase.typeCorrect;
+
+            if(isOrg1Correct && isOrg2Correct && isTypeCorrect) {
+                playSound('correct');
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                gameState.score += 20;
+                updateScoreUI();
+
+                showModal(
+                    '🎉 Analisis Hebat!',
+                    'Detektif berhasil memecahkan kasus ini!<br><br>' + currentCase.explanation,
+                    'Lanjut Kasus Berikutnya ➡️',
+                    () => {
+                        nextCaseOrFinishZone();
+                    }
+                );
+            } else {
+                playSound('wrong');
+                showModal(
+                    '❌ Masih Ada Kekeliruan!',
+                    'Analisis detektif belum tepat.<br><br><strong>Petunjuk:</strong> Perhatikan kembali apakah ada yang dirugikan (-), diuntungkan (+), atau biasa saja (0). Coba lagi!',
+                    'Coba Lagi 🔄',
+                    () => {}
+                );
+            }
+        }
+
+        function nextCaseOrFinishZone() {
+            gameState.currentCaseIndex++;
+            if(gameState.currentCaseIndex < casesData[gameState.currentZone].length) {
+                loadCase();
+            } else {
+                gameState.completedZones[gameState.currentZone] = true;
+                updateMapZoneStatus();
+                backToMap();
+            }
+        }
+
+        function updateMapZoneStatus() {
+            const zones = ['ocean', 'jungle', 'farm'];
+            let completedCount = 0;
+
+            zones.forEach(z => {
+                if(gameState.completedZones[z]) {
+                    completedCount++;
+                    document.getElementById(`status-zone-${z}`).innerHTML = `<span class="bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-bold">✅ Selesai (+40 Poin)</span>`;
+                }
+            });
+
+            if(completedCount >= 2) {
+                const btnBonus = document.getElementById('btn-bonus-stage');
+                btnBonus.disabled = false;
+                btnBonus.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btnBonus.classList.add('bg-purple-600', 'hover:bg-purple-700', 'btn-bounce', 'shadow-md');
+                btnBonus.innerText = 'Buka Lab & Super City 🚀';
+            }
+        }
+
+        function backToMap() {
+            playSound('click');
+            switchScreen('screen-map');
+        }
+
+        function updateScoreUI() {
+            document.getElementById('header-score').innerText = `${gameState.score} Poin`;
+        }
+
+        function showModal(title, textHTML, btnText, onConfirm) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-explanation').innerHTML = textHTML;
+            const modalBtn = document.getElementById('modal-btn');
+            modalBtn.innerText = btnText;
+            modalBtn.classList.remove('hidden');
+            
+            const modal = document.getElementById('modal-feedback');
+            modal.classList.remove('hidden');
+
+            modalBtn.onclick = () => {
+                playSound('click');
+                modal.classList.add('hidden');
+                if(onConfirm) onConfirm();
+            };
+        }
+
+        function closeModal() {
+            playSound('click');
+            document.getElementById('modal-feedback').classList.add('hidden');
+        }
+
+        function startBonusStages() {
+            playSound('click');
+            initLabStage();
+            switchScreen('screen-lab');
+        }
+
+        function initLabStage() {
+            gameState.labState = [...labItems];
+            gameState.selectedLabItem = null;
+            renderLabItems();
+            document.getElementById('bucket-mutualisme').innerHTML = '';
+            document.getElementById('bucket-komensalisme').innerHTML = '';
+            document.getElementById('bucket-parasitisme').innerHTML = '';
+        }
+
+        function renderLabItems() {
+            const container = document.getElementById('lab-items-container');
+            container.innerHTML = '';
+
+            gameState.labState.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `p-2.5 px-4 bg-white border-2 rounded-xl text-xs font-bold text-gray-700 shadow-sm transition-all hover:border-purple-400 ${gameState.selectedLabItem === item.id ? 'border-purple-600 bg-purple-100 scale-105' : 'border-gray-200'}`;
+                btn.innerText = item.name;
+                btn.onclick = () => {
+                    playSound('click');
+                    gameState.selectedLabItem = item.id;
+                    renderLabItems();
+                };
+                container.appendChild(btn);
+            });
+
+            if(gameState.labState.length === 0) {
+                container.innerHTML = `<span class="text-xs text-emerald-600 font-bold">Semua pasangan sudah dimasukkan ke dalam Lab! ✨</span>`;
+            }
+        }
+
+        function dropToLabCategory(category) {
+            if(!gameState.selectedLabItem) {
+                alert('Pilih pasangan organisme dari daftar di atas terlebih dahulu!');
+                return;
+            }
+
+            const itemIndex = gameState.labState.findIndex(i => i.id === gameState.selectedLabItem);
+            if(itemIndex > -1) {
+                const item = gameState.labState[itemIndex];
+                
+                if(item.type === category) {
+                    playSound('correct');
+                    gameState.score += 10;
+                    updateScoreUI();
+
+                    const bucket = document.getElementById(`bucket-${category}`);
+                    const badge = document.createElement('div');
+                    badge.className = 'bg-white p-1.5 px-3 rounded-lg text-xs font-bold text-gray-700 border shadow-sm flex items-center justify-between mb-1';
+                    badge.innerHTML = `<span>${item.name}</span> <span class="text-emerald-500">✓</span>`;
+                    bucket.appendChild(badge);
+
+                    gameState.labState.splice(itemIndex, 1);
+                    gameState.selectedLabItem = null;
+                    renderLabItems();
+                } else {
+                    playSound('wrong');
+                    alert(`Opps! ${item.name} bukan merupakan jenis ${category.toUpperCase()}. Coba pikirkan kembali hubungannya!`);
+                }
+            }
+        }
+
+        function finishLabStage() {
+            playSound('click');
+            initCityStage();
+            switchScreen('screen-city');
+        }
+
+        function initCityStage() {
+            const container = document.getElementById('city-quiz-container');
+            container.innerHTML = '';
+
+            cityQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-amber-50/70 border-2 border-amber-200 p-5 rounded-2xl';
+                
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <button onclick="answerCityQuestion('${q.id}', ${optIdx})" id="btn-city-${q.id}-${optIdx}" class="city-opt-btn w-full text-left p-3 rounded-xl border border-amber-200 bg-white hover:bg-amber-100 text-xs md:text-sm font-semibold text-gray-700 transition-all mb-2">
+                            ${opt.text}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="mb-3">
+                        <span class="text-xs font-bold bg-amber-200 text-amber-900 px-2.5 py-1 rounded-md">Kasus Darurat #${idx + 1}</span>
+                        <p class="text-sm font-bold text-gray-800 mt-2">${q.scenario}</p>
+                        <p class="text-xs text-gray-600 mt-1">${q.question}</p>
+                    </div>
+                    <div>${optionsHTML}</div>
+                    <div id="city-explain-${q.id}" class="hidden mt-3 p-3 bg-white rounded-xl text-xs text-gray-600 border border-amber-200"></div>
+                `;
+                container.appendChild(card);
+            });
+
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'btn-bounce w-full bg-brandGreen hover:bg-emerald-600 text-white font-bold text-lg py-3 rounded-2xl shadow-md border-b-4 border-emerald-800 mt-4';
+            submitBtn.innerText = '🎓 Selesaikan Misi & Lihat Sertifikat!';
+            submitBtn.onclick = finishGameAndShowCertificate;
+            container.appendChild(submitBtn);
+        }
+
+        function answerCityQuestion(qId, optIdx) {
+            playSound('click');
+            const q = cityQuestions.find(item => item.id === qId);
+            const selectedOpt = q.options[optIdx];
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-city-${qId}-${idx}`);
+                btn.classList.remove('bg-amber-100', 'border-brandGreen', 'bg-emerald-50');
+            });
+
+            const targetBtn = document.getElementById(`btn-city-${qId}-${optIdx}`);
+
+            if(selectedOpt.correct) {
+                playSound('correct');
+                targetBtn.classList.add('border-brandGreen', 'bg-emerald-50');
+                if(!gameState.cityAnswers[qId]) {
+                    gameState.score += 15;
+                    updateScoreUI();
+                }
+            } else {
+                playSound('wrong');
+                targetBtn.classList.add('border-brandRed', 'bg-rose-50');
+            }
+
+            gameState.cityAnswers[qId] = selectedOpt.correct;
+
+            const explainDiv = document.getElementById(`city-explain-${qId}`);
+            explainDiv.classList.remove('hidden');
+            explainDiv.innerHTML = `<strong>Penjelasan:</strong> ${q.explanation}`;
+        }
+
+        function finishGameAndShowCertificate() {
+            playSound('fanfare');
+            confetti({ particleCount: 120, spread: 100, origin: { y: 0.6 } });
+
+            document.getElementById('cert-name').innerText = gameState.playerName;
+            document.getElementById('cert-score').innerText = `${gameState.score} Poin`;
+
+            let rank = 'Detektif Pemula';
+            if(gameState.score >= 120) rank = 'Master Detektif Ekosistem';
+            else if(gameState.score >= 80) rank = 'Detektif Handal';
+
+            document.getElementById('cert-rank').innerText = rank;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('cert-date').innerText = dateStr;
+
+            switchScreen('screen-certificate');
+        }
+
+        function resetGame() {
+            playSound('click');
+            gameState = {
+                playerName: '',
+                avatar: 'rio',
+                score: 0,
+                completedZones: { ocean: false, jungle: false, farm: false },
+                currentZone: null,
+                currentCaseIndex: 0,
+                selectedOrg1Reaction: null,
+                selectedOrg2Reaction: null,
+                selectedSimbiosisType: null,
+                selectedLabItem: null,
+                labState: [],
+                cityAnswers: {},
+                snakesPos: 1,
+                isDiceRolling: false
+            };
+            document.getElementById('input-player-name').value = '';
+            document.getElementById('player-badge').classList.add('hidden');
+            updateScoreUI();
+            
+            ['ocean', 'jungle', 'farm'].forEach(z => {
+                document.getElementById(`status-zone-${z}`).innerHTML = `<span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">Belum Selesai</span>`;
+            });
+
+            const btnBonus = document.getElementById('btn-bonus-stage');
+            btnBonus.disabled = true;
+            btnBonus.className = 'px-6 py-3 rounded-2xl font-bold text-white bg-gray-400 cursor-not-allowed transition-all';
+            btnBonus.innerText = '🔒 Terkunci';
+
+            switchScreen('screen-welcome');
+        }
+
+        // Default Init
+        selectAvatar('rio');
+    </script>
+</body>
+</html>
